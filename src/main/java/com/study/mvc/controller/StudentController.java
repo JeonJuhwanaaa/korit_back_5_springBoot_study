@@ -8,7 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,19 +31,25 @@ import java.util.stream.Collectors;
 @RestController
 public class StudentController {
 
-    // @RequestBody 붙이면 JSON으로 가져온다
+    // <*****이해하기*****>  @RequestBody 붙이면 JSON으로 가져온다
     // post 할 땐 @RequestBody 꼭 붙이기
     // cookie 저장소 사용하기 :
+    // cookie 는 문자열로 가져온다 / cookie 는 key, value 값을 가져옴 /
     @PostMapping("/student")
-    public ResponseEntity<?> addStudent(@CookieValue String students, @RequestBody Student student) throws JsonProcessingException {
-
+    public ResponseEntity<?> addStudent(@CookieValue(required = false) String students, @RequestBody Student student) throws JsonProcessingException, UnsupportedEncodingException {
+        ObjectMapper objectMapper = new ObjectMapper();
         List<Student> studentList = new ArrayList<>();
         int lastId = 0;
 
+        System.out.println(students);
+
+        // for문 설명 : readValue안에는 student(json) -> list로 변환 / object를 map으로 다운케스팅 / convertValue는 map을 student객체로 변환
         if(students != null) {
             if(!students.isBlank()) {
-                ObjectMapper studentCookie = new ObjectMapper();
-                studentList = studentCookie.readValue(students, List.class);
+                for(Object object : objectMapper.readValue(students, List.class)) {
+                    Map<String, Object> studentMap = (Map<String, Object>) object;
+                    studentList.add(objectMapper.convertValue(studentMap, Student.class));
+                }
                 lastId = studentList.get(studentList.size() - 1).getStudentId();
             }
         }
@@ -50,10 +57,12 @@ public class StudentController {
         student.setStudentId(lastId + 1);
         studentList.add(student);
 
-        ObjectMapper newStudentList = new ObjectMapper();
-        String newStudents = newStudentList.writeValueAsString(studentList);
+        String studentListJson = objectMapper.writeValueAsString(studentList);
+
+        System.out.println(studentListJson);
+
         ResponseCookie responseCookie = ResponseCookie
-                .from("test", "test_data")
+                .from("students", URLEncoder.encode(studentListJson, "UTF-8"))
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -67,11 +76,6 @@ public class StudentController {
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .body(student);
     }
-
-
-
-
-
 
 
     // ---------------------------------------------------------------------------
