@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.mvc.repository.DBStudyRepository">
+
+    <!--  //////////////////////////////////// [ MAP ] ///////////////////////////////////////////  -->
+<!--    id는 entity 명 / type 은 study객체-->
+    <resultMap id="studyResultMap" type="com.study.mvc.entity.Study">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+
+    <!--  //////////////////////////////////// [ SQL ] ///////////////////////////////////////////  -->
+
+<!--    id= Repository안의 메소드명  // 매개변수는 parameterType = // useGeneratedKeys = "기본값은 false" // keyProperty =  -->
+    <insert
+            id="save"
+            parameterType="com.study.mvc.entity.Study"
+            useGeneratedKeys="true"
+            keyProperty="id"
+    >
+
+<!--        sql 사용 방식으로 작성 / id 값은 Auto 되어있고 name,age는 값 가져오고 new sql에 datatime 이니깐 현재시간 가져온다-->
+        insert into study_tb
+        values (0, #{name}, #{age}, now())
+    </insert>
+
+<!--    단일 검색-->
+    <select
+            id="findStudyById"
+            parameterType="Integer"
+            resultMap="studyResultMap"
+    >
+        select
+            id,
+            name,
+            age,
+            create_date
+        from
+            study_tb
+        where
+            id = #{id}
+    </select>
+
+<!--    단일 검색-->
+    <select
+            id="findStudyByName"
+            parameterType="String"
+            resultMap="studyResultMap"
+    >
+
+        select
+            id,
+            name,
+            age,
+            create_date
+        from
+            study_tb
+        where
+            name = #{name}
+    </select>
+
+<!--    여러개 검색-->
+
+    <select
+            id="findAll"
+            resultMap="studyResultMap"
+    >
+        select
+            id,
+            name,
+            age,
+            create_date
+        from
+            study_tb
+    </select>
+
+<!--    지우기-->
+
+    <delete
+            id="deleteById"
+            parameterType="Integer"
+    >
+        delete
+        from
+            study_tb
+        where
+            id = #{id}
+    </delete>
+
+<!--    업데이트(put 전체수정/ patch 부분수정)-->
+    <update
+            id="putById"
+            parameterType="com.study.mvc.entity.Study"
+    >
+        update study_tb
+        set
+            name = #{name},
+            age = #{age}
+        where
+            id = #{id}
+    </update>
+
+
+    <update
+            id="patchById"
+            parameterType="com.study.mvc.entity.Study"
+    >
+        update study_tb
+        set
+            <if test="name != null and !name.equals('')">
+                name = #{name},
+            </if>
+            <if test="age != 0">
+                age = #{age},
+            </if>
+                create_date = create_date
+        where
+            id = #{id}
+    </update>
+</mapper>
+
+<!--mybatis 조건문 <if test="조건"></if>  -->
