@@ -37,6 +37,7 @@ public class DBController {
         return ResponseEntity.ok(dbStudyService.findStudyByName(name));
     }
 
+
     @GetMapping("/select/studys")
     public ResponseEntity<?> selectStudyAll() {
         return ResponseEntity.ok(dbStudyService.findAll());

@@ -4,6 +4,7 @@ import com.study.mvc.dto.DBStudyReqDto;
 import com.study.mvc.dto.DBStudyInsertRespDto;
 import com.study.mvc.dto.DBStudySelectRespDto;
 import com.study.mvc.entity.Study;
+import com.study.mvc.exception.DuplicatedException;
 import com.study.mvc.repository.DBStudyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,12 +79,14 @@ public class DBStudyService {
 
     //    여러개 검색
     public List<DBStudySelectRespDto> findAll() {
+
+        // 빈 배열 하나 만들어줘서 안에 넣기
         List<DBStudySelectRespDto> respDtoList = new ArrayList<>();
 
         List<Study> studyList = dbStudyRepository.findAll();
 
         // 하나씩 꺼내서 dto 형식으로 바꿔서 List에 넣어주기
-        for(Study study : studyList) {
+        for (Study study : studyList) {
             respDtoList.add(study.toDto());
         }
         return respDtoList;
@@ -110,5 +113,14 @@ public class DBStudyService {
 
     public int patchById(int id, DBStudyReqDto dbStudyReqDto) {
         return dbStudyRepository.patchById(dbStudyReqDto.toEntity(id));
+    }
+
+    // ------------------------------------------------------------------------ 예외처리
+
+    public void checkDuplicatedByName(String name) {
+
+        if(dbStudyRepository.findStudyByName(name) != null) {
+            throw new DuplicatedException("이름 중복 오류");
+        }
     }
 }
