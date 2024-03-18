@@ -35,6 +35,7 @@ public class ValidAop {
 
         String methodName = proceedingJoinPoint.getSignature().getName();
 
+        // 컨트롤러 안 signup 의 매개변수(dto / bindingResult)를 배열로 가져오기
         Object[] args = proceedingJoinPoint.getArgs();
 
         BeanPropertyBindingResult bindingResult = null;
@@ -47,6 +48,7 @@ public class ValidAop {
             }
         }
 
+        // 중복확인
         if(methodName.equals("signup")) {
             SignupReqDto signupReqDto = null;
 

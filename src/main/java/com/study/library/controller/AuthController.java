@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
+// @RequestMapping : 공통 주소이기때문에 그룹화한것
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -32,6 +32,7 @@ public class AuthController {
 
     @ValidAspect
     @PostMapping("/signup")
+    // 검증걸과가 bindingresult에 담긴다
     public ResponseEntity<?> signup(@Valid @RequestBody SignupReqDto signupReqDto, BindingResult bindingResult) {
 
 //        // true면 중복이라는 것
@@ -50,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninReqDto signinReqDto) {
-
         return ResponseEntity.ok(authService.signin(signinReqDto));
     }
+
 }

@@ -18,7 +18,6 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.internalServerError().body(e.getMessage());
     }
 
-
     @ExceptionHandler(ValidException.class)
     public ResponseEntity<?> validException(ValidException e) {
         return ResponseEntity.badRequest().body(e.getErrorMap());
