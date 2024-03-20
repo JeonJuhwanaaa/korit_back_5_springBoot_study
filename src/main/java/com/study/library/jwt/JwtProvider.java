@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
+@Slf4j      // log, error 콘솔창에 뜨게할려고 쓴다
 @Component
 public class JwtProvider {
 
@@ -50,16 +50,20 @@ public class JwtProvider {
         Date expireDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
 
         // 토큰 만들기
-        String accessToken = Jwts.builder()
+        // Claim : 토큰의 대한 정보를 set 해주는것 (jwt 버전 setter 느낌)
+        String accessToken = Jwts
+                .builder()
                 .claim("userId", userId)                    // key, value
                 .claim("username", username)                // key, value
                 .claim("authorities", authorities)          // 권한
                 .setExpiration(expireDate)
                 .signWith(key, SignatureAlgorithm.HS256)       // 암호화
-                .compact();
+                .compact();                                    // builder 마무리
 
         return accessToken;
     }
+
+    // ---------------------------------------------------------------------------------
 
     public String removeBearer(String token) {
         // hasText() 안에 token을 넣어줘서 null / 공백 체크 알아서 해줌
@@ -76,19 +80,11 @@ public class JwtProvider {
     public Claims getClaims(String token) {
         Claims claims = null;
 
-        try{
-            claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)      // token 안에있는 claim 들을 Claim으로 변환
-                    .getBody();                 //
-
-        }catch (Exception e){
-            // 키가 만료되거나 위조된 것은 예외처리
-            // 어떤 오류가 났는지 에러 출력
-            // e.getMessage() 가 {} 안에 들어감
-            log.error("JWT 인증오류: {}", e.getMessage());
-        }
+        claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)      // token 안에있는 claim 들을 Claim으로 변환
+                .getBody();                 //
         return claims;
     }
 
@@ -106,4 +102,16 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(principalUser, principalUser.getPassword(), principalUser.getAuthorities());
     }
 
+    // ---------------------------------------------------------------------------------
+
+    public String generateAuthMailToken(int userId, String toMailAddress) {
+        Date expireDate = new Date(new Date().getTime() + (1000 * 60 * 5));
+        return Jwts
+                .builder()
+                .claim("userId", userId)
+                .claim("toMailAddress", toMailAddress)
+                .setExpiration(expireDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
 }

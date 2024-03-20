@@ -33,6 +33,8 @@ public class User {
 
         // 리스트 방법
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        // roleRegister
         for(RoleRegister roleRegister : roleRegisters) {
             authorities.add(new SimpleGrantedAuthority(roleRegister.getRole().getRoleName()));
         }

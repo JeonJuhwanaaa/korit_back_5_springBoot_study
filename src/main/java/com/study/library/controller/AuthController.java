@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+// csr 할때 데이터를 주고 받고 이동하겠다 / @postMapping, @GetMapping ... 등
 @RestController
 // @RequestMapping : 공통 주소이기때문에 그룹화한것
 @RequestMapping("/auth")
@@ -30,9 +30,12 @@ public class AuthController {
 
     // @valid + Binding 세트
 
+    // 잘못된 정보 확인용
     @ValidAspect
     @PostMapping("/signup")
     // 검증걸과가 bindingresult에 담긴다
+    // @Valid 객체에 대한 검증을 하는 어노테이션 / 순서대로 SignupReqDto 검증 하고 BindingResult 검증
+    // BindingResult 는 검증하면서 오류 발생 시 잡아내서 message 보여지는 용도
     public ResponseEntity<?> signup(@Valid @RequestBody SignupReqDto signupReqDto, BindingResult bindingResult) {
 
 //        // true면 중복이라는 것
@@ -49,6 +52,7 @@ public class AuthController {
         return ResponseEntity.created(null).body(true);
     }
 
+    // id / password 찾기만하는게 아니라 token 발급도 해줘야해서 post 요청
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninReqDto signinReqDto) {
         return ResponseEntity.ok(authService.signin(signinReqDto));

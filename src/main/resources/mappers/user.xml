@@ -5,6 +5,7 @@
 
 <mapper namespace="com.study.library.repository.UserMapper">
 
+<!--    resultMap 해주는 이유 : springBoot 는 카멜표기법 / db는 스테이크 표기법으로 달라서 똑같이 맞춰줄려고 사용한다-->
     <resultMap id="RoleResultMap" type="com.study.library.entity.Role">
         <id property="roleId" column="role_id" />
         <result property="roleName" column="role_name" />
@@ -44,8 +45,25 @@
             parameterType="integer"
     >
         insert into role_register_tb
-        values(0, #{userId}, 1, now(), now())
+        values(0, #{userId}, #{roleId}, now(), now())
     </insert>
+
+    <select id="findRoleRegisterByUserIdAndRoleId" resultMap="RoleRegisterResultMap">
+        select
+            rrt.role_register_id,
+            rrt.user_id,
+            rrt.role_id,
+            rt.role_name,
+            rt.role_name_kor,
+            rrt.create_date,
+            rrt.update_date
+        from
+            role_register_tb rrt
+            left outer join role_tb rt on(rt.role_id = rrt.role_id)
+        where
+            rrt.user_id = #{userId}
+            and rrt.role_id = #{roleId}
+    </select>
 
     <select
             id="findUserByUsername"

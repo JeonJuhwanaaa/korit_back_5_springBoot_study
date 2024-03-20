@@ -15,8 +15,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
-@EnableWebSecurity
-@Configuration
+@EnableWebSecurity // 3
+@Configuration // 1
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -34,17 +34,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
+    @Override // 2
     protected void configure(HttpSecurity http) throws Exception {
 
         // 매개변수 http 안에 csrf / authorizeRequests / ... 넣는 작업
-        http.cors();                                                // 크로스오리진 해줘야한다 ->
+        http.cors();                                                // cors 정책 허용
         http.csrf().disable();
         http.authorizeRequests()
                 .antMatchers("/server/**", "/auth/**") // server로 시작하는 주소 , auth로 시작하는 주소
                 .permitAll()                                      // 전부 허용해줘라
+                .antMatchers("/mail/authenticate")
+                .permitAll()
                 .anyRequest()                                     // 그 외 나머지 어떤 요청은
                 .authenticated()                                  // 인증 거쳐라
+
                 .and()
                 .addFilterAfter(permitAllFilter, LogoutFilter.class)        // 첫번째로 인증 시작
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)      // 여기까지 끝난 뒤

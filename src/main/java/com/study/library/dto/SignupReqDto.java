@@ -26,6 +26,7 @@ public class SignupReqDto {
     @Email(regexp = "^[0-9a-zA-Z]([-_\\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\\.]?[0-9a-zA-Z])*\\.[a-zA-Z]{1,3}$", message = "이메일 형식이어야 합니다.")
     private String email;
 
+    // dto -> entity 변환
     // BCrypt 로 감싸주면 암호화가 됨
     public User toEntity(BCryptPasswordEncoder passwordEncoder) {
         return User.builder()
