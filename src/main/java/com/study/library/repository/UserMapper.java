@@ -1,6 +1,7 @@
 package com.study.library.repository;
 
 
+import com.study.library.entity.OAuth2;
 import com.study.library.entity.RoleRegister;
 import com.study.library.entity.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,4 +16,8 @@ public interface UserMapper {
     public RoleRegister findRoleRegisterByUserIdAndRoleId(@Param("userId") int userId, @Param("roleId") int roleId);
     // .xml 에 쓰이는 키값
     public int saveRole(@Param("userId") int userId, @Param("roleId") int roleId);
+
+    public User findUserByOAuth2Name(String oAuth2Name);
+
+    public int saveOAuth2(OAuth2 oAuth2);
 }

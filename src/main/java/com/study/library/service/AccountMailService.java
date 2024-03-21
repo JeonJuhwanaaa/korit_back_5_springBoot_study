@@ -50,17 +50,19 @@ public class AccountMailService {
     public boolean sendAuthMail() {
         boolean result = false;
 
+        // 라이브러리 세팅
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
 
         int userId = principalUser.getUserId();
         String toMailAddress = principalUser.getEmail();
 
+        // 이메일 전송할려면 MimeMessage를 사용 - 라이브러리 세팅
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
             // 첫번째 매개변수 :
-            // 두번째 매개변수 : true일 경우 멀티파트를 이용하겠다 <-> 안하겠다
+            // 두번째 매개변수 : 파일 전송 시에는 true
             // 세번째 매개변수 :
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "utf-8");
             helper.setSubject("도서관리 시스템 사용자 메일 인증");            // 메일 보낼 때 제목
@@ -69,6 +71,9 @@ public class AccountMailService {
 
             String authMailToken = jwtProvider.generateAuthMailToken(userId, toMailAddress);        // 회원가입된 정보(수신자)의 Id / email 가져오기
 
+
+            // 메일 내용작성
+            // StringBuilder 문자열 하나하나씩 쌓는 용도
             StringBuilder mailContent = new StringBuilder();
 
             mailContent.append("<div>");
@@ -103,13 +108,16 @@ public class AccountMailService {
         // IllegalArgumentException => null 또는 빈값
 
         try{
+            // 정상적으로 인증이 됐을 경우
             claims = jwtProvider.getClaims(token);
             int userId = Integer.parseInt(claims.get("userId").toString());
             RoleRegister roleRegister = userMapper.findRoleRegisterByUserIdAndRoleId(userId, 2);
 
+            // 이미 해당 userId / roleId 를 가지고있다면
             if(roleRegister != null) {
                 resultMap = Map.of("status", true, "message", "이미 인증이 완료된 메일입니다.");
             }else {
+                // 없다면 2(일반 사용자 권한)을 넣어준다
                 userMapper.saveRole(userId,2);
                 resultMap = Map.of("status", true, "message", "인증완료");
             }
