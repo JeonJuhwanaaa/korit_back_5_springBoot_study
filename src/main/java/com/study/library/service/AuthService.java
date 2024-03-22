@@ -1,8 +1,10 @@
 package com.study.library.service;
 
+import com.study.library.dto.OAuth2MergeReqDto;
 import com.study.library.dto.OAuth2SignupReqDto;
 import com.study.library.dto.SigninReqDto;
 import com.study.library.dto.SignupReqDto;
+import com.study.library.entity.OAuth2;
 import com.study.library.entity.User;
 import com.study.library.exception.SaveException;
 import com.study.library.jwt.JwtProvider;
@@ -52,7 +54,7 @@ public class AuthService {
             throw new SaveException();
         }
     }
-
+    // ----------------------------------------------------------------------------------------------------
 
     @Transactional(rollbackFor = Exception.class)
     public void oAuth2Signup(OAuth2SignupReqDto oAuth2SignupReqDto) {
@@ -68,7 +70,7 @@ public class AuthService {
             throw new SaveException();
         }
     }
-
+    // ----------------------------------------------------------------------------------------------------
     public String signin(SigninReqDto signinReqDto) {
 
         User user = userMapper.findUserByUsername(signinReqDto.getUsername());
@@ -80,5 +82,23 @@ public class AuthService {
         }
         // 토큰을 만들겠다
         return jwtProvider.generateToken(user);
+    }
+    // ----------------------------------------------------------------------------------------------------
+    public void oAuth2Merge(OAuth2MergeReqDto oAuth2MergeReqDto) {
+        User user = userMapper.findUserByUsername(oAuth2MergeReqDto.getUsername());
+
+        if(user == null) {
+            throw new UsernameNotFoundException("사용자 정보를 확인하세요.");
+        }if(!passwordEncoder.matches(oAuth2MergeReqDto.getPassword(), user.getPassword())) { // matches(암호화된 값을 풀어서 평문으로 만든다, 입력한 값) 두 매개변수를 비교
+            throw new BadCredentialsException("사용자 정보를 확인하세요.");
+        }
+
+        OAuth2 oAuth2 = OAuth2.builder()
+                .oAuth2Name(oAuth2MergeReqDto.getOauth2Name())
+                .userId(user.getUserId())
+                .providerName(oAuth2MergeReqDto.getProviderName())
+                .build();
+
+        userMapper.saveOAuth2(oAuth2);
     }
 }

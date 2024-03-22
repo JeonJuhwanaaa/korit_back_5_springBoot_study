@@ -23,19 +23,27 @@ public class OAuth2PrincipalUserService implements OAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
 //      System.out.println(attributes);
+
+        System.out.println(attributes);
+
         String provider = userRequest.getClientRegistration().getClientName();  // Google, Kakao, Naver
 
         Map<String, Object> newAttributes = null;
+        String id = null;
+
         switch (provider) {
             case "Google":
-                String id = attributes.get("sub").toString();
-                newAttributes = Map.of("id", id, "provider", provider);      // 구글은 sub , 네이버 카카오는 id 로 표기되기때문에 sub을 id로 바꿔줄 필요있음()
+                id = attributes.get("sub").toString();
                 break;
             case "Naver":
+                Map<String, Object> response = (Map<String,Object>) attributes.get("response");
+                id = response.get("id").toString();
                 break;
             case "Kakao":
+                id = attributes.get("id").toString();
                 break;
         }
+        newAttributes = Map.of("id", id, "provider", provider);
 
         // 첫번째 매개변수는 - 권한 / 세번째는 key값
         return new DefaultOAuth2User(oAuth2User.getAuthorities(), newAttributes, "id");

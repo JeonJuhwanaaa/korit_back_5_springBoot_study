@@ -3,6 +3,7 @@ package com.study.library.controller;
 
 import com.study.library.aop.annotation.ParamsPrintAspect;
 import com.study.library.aop.annotation.ValidAspect;
+import com.study.library.dto.OAuth2MergeReqDto;
 import com.study.library.dto.OAuth2SignupReqDto;
 import com.study.library.dto.SigninReqDto;
 import com.study.library.dto.SignupReqDto;
@@ -53,6 +54,7 @@ public class AuthController {
         return ResponseEntity.created(null).body(true);
     }
 
+    // ----------------------------------------------------------------------------------------------------
 
     @ValidAspect
     @ParamsPrintAspect
@@ -63,6 +65,7 @@ public class AuthController {
 
         return ResponseEntity.created(null).body(true);
     }
+    // ----------------------------------------------------------------------------------------------------
 
     // id / password 찾기만하는게 아니라 token 발급도 해줘야해서 post 요청
     @PostMapping("/signin")
@@ -70,6 +73,10 @@ public class AuthController {
         return ResponseEntity.ok(authService.signin(signinReqDto));
     }
 
-
-
+    // ----------------------------------------------------------------------------------------------------
+    @PostMapping("/oauth2/merge")
+    public ResponseEntity<?> oAuth2Merge(@RequestBody OAuth2MergeReqDto oAuth2MergeReqDto) {
+        authService.oAuth2Merge(oAuth2MergeReqDto);
+        return ResponseEntity.ok(true);
+    }
 }
