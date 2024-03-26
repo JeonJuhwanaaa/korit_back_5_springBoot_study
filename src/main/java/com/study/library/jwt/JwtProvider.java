@@ -47,7 +47,7 @@ public class JwtProvider {
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
 
         // 만료기간 = 현재 날짜 시간을 가지고와서 하루(24시간) 더해라
-        Date expireDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
+        Date expireDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 20));
 
         // 토큰 만들기
         // Claim : 토큰의 대한 정보를 set 해주는것 (jwt 버전 setter 느낌)
