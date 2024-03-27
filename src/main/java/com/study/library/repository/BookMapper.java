@@ -11,8 +11,14 @@ import java.util.List;
 public interface BookMapper {
     public int saveBook(Book book);
     public List<Book> findBooks(
-            @Param("startIndex") int startIndex,        // 몇번부터         (limit 때 사용
-            @Param("count") int count,                  // 몇개씩 들고와라     (limit 때 사용
+            @Param("startIndex") int startIndex,        // 몇번부터         (limit 때 사용)
+            @Param("count") int count,                  // 몇개씩 들고와라     (limit 때 사용)
+            @Param("bookTypeId") int bookTypeId,
+            @Param("categoryId") int categoryId,
+            @Param("searchTypeId") int searchTypeId,
+            @Param("searchText") String searchText);
+
+    public int getBookCount(
             @Param("bookTypeId") int bookTypeId,
             @Param("categoryId") int categoryId,
             @Param("searchTypeId") int searchTypeId,

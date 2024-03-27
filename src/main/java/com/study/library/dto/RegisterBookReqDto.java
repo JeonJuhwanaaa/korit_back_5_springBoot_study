@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
 public class RegisterBookReqDto {
 
     private String isbn;
-    @Min(value = 1, message = "숫자만 입력 가능합니다.")
+    @Min(value = 1, message = "숫자만 입력 가능합니다.")  // 유효성 검사 , @Min - 최소글자 , message - 실패시 알림
     private int bookTypeId;
     @Min(value = 1, message = "숫자만 입력 가능합니다.")
     private int categoryId;
